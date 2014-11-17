@@ -4,7 +4,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
-import com.google.android.gcm.GCMRegistrar;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
@@ -13,6 +13,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Iterator;
 
 /**
@@ -47,6 +48,9 @@ public class PushPlugin extends CordovaPlugin {
 
 		Log.v(TAG, "execute: action=" + action);
 
+		GoogleCloudMessaging gcm =
+				GoogleCloudMessaging.getInstance(getApplicationContext());
+		
 		if (REGISTER.equals(action)) {
 
 			Log.v(TAG, "execute: data=" + data.toString());
@@ -62,9 +66,16 @@ public class PushPlugin extends CordovaPlugin {
 
 				Log.v(TAG, "execute: ECB=" + gECB + " senderID=" + gSenderID);
 
-				GCMRegistrar.register(getApplicationContext(), gSenderID);
+				String registrationId = gcm.register(gSenderID);
+				
+				Log.v(TAG, "execute: registrationId="+ registrationId);
+				
 				result = true;
-				callbackContext.success();
+				callbackContext.success(registrationId);
+			} catch (IOException e) {
+				Log.e(TAG, "execute: Got IO Exception " + e.getMessage());
+				result = false;
+				callbackContext.error(e.getMessage());
 			} catch (JSONException e) {
 				Log.e(TAG, "execute: Got JSON Exception " + e.getMessage());
 				result = false;
@@ -79,7 +90,13 @@ public class PushPlugin extends CordovaPlugin {
 
 		} else if (UNREGISTER.equals(action)) {
 
-			GCMRegistrar.unregister(getApplicationContext());
+			try {
+				gcm.unregister();
+			} catch (IOException e) {
+				result = false;
+				Log.e(TAG, "execute: Got IO Exception " + e.getMessage());
+				callbackContext.error(e.getMessage());
+			}
 
 			Log.v(TAG, "UNREGISTER");
 			result = true;
