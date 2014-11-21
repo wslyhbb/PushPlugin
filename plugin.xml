@@ -44,11 +44,13 @@
 			<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 			<permission android:name="$PACKAGE_NAME.permission.C2D_MESSAGE" android:protectionLevel="signature" />
 			<uses-permission android:name="$PACKAGE_NAME.permission.C2D_MESSAGE" />
+			<uses-permission android:name="com.sec.android.provider.badge.permission.READ" />
+			<uses-permission android:name="com.sec.android.provider.badge.permission.WRITE" />
 		</config-file>
 
 		<config-file target="AndroidManifest.xml" parent="/manifest/application">
 			<activity android:name="com.plugin.gcm.PushHandlerActivity" android:exported="true"/>
-			<receiver android:name="com.plugin.gcm.CordovaGCMBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND" >
+			<receiver android:name="com.plugin.gcm.GcmBroadcastReceiver" android:permission="com.google.android.c2dm.permission.SEND" >
 				<intent-filter>
 					<action android:name="com.google.android.c2dm.intent.RECEIVE" />
 					<action android:name="com.google.android.c2dm.intent.REGISTRATION" />
@@ -58,12 +60,12 @@
 			<service android:name="com.plugin.gcm.GCMIntentService" />
 		</config-file>
 
-		<source-file src="src/android/libs/google-play-services.jar" target-dir="libs/" />
+		<lib-file src="src/android/com/plugin/android-support-v13.jar" />
+		<lib-file src="src/android/libs/google-play-services.jar" />
 		<source-file src="src/android/com/plugin/gcm/GcmBroadcastReceiver.java" target-dir="src/com/plugin/gcm/" />
 		<source-file src="src/android/com/plugin/gcm/GCMIntentService.java" target-dir="src/com/plugin/gcm/" />
 		<source-file src="src/android/com/plugin/gcm/PushHandlerActivity.java" target-dir="src/com/plugin/gcm/" />
 		<source-file src="src/android/com/plugin/gcm/PushPlugin.java" target-dir="src/com/plugin/gcm/" />
-		<source-file src="src/android/com/plugin/android-support-v13.jar" target-dir="libs/" />
 
 	</platform>
 
